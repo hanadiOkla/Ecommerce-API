@@ -8,6 +8,13 @@ const app = express();
 const port =  process.env.PORT || 3000
 //dns.setServers(["8.8.8.8" , "8.8.4.4"]);
 
+app.use(express.json());
+
+
+
+
+
+
 ConnectToDB()
 //Listen 
 app.listen(port, () => {
