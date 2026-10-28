@@ -4,7 +4,7 @@ import bcryptjs from "bcryptjs";
 const otpSchema = new mongoose.Schema({
   email: {
     type: String,
-    required: true,
+    required: [true, "Email is required"],
     trim: true,
     lowercase: true,
   },
@@ -36,7 +36,7 @@ otpSchema.pre('save', async function () {
 
 //method compareOtp
 otpSchema.methods.compareOtp = async function (enteredOtp) {
-  return await bcryptjs.compare(enteredOtp, this.otp);
+  return await bcryptjs.compare(String(enteredOtp), this.otp);
 };
 
 const OTP = mongoose.model('OTP', otpSchema);
