@@ -2,7 +2,7 @@ import User from "../models/User.model.js";
 import OTP from "../models/OTP.model.js";
 import JWT from "jsonwebtoken";
 import sendEmail  from "../utils/sendEmail.js";
-
+import bcryptjs from "bcryptjs";
 
 export const sendRegisterOtp = async (req , res)=>{
   try {
@@ -15,6 +15,7 @@ export const sendRegisterOtp = async (req , res)=>{
         message: "Email already exists"
       })
     }
+    const hashedpassword = await bcryptjs.hash(password, 10) 
     const otp = Math.floor(100000 + Math.random() * 900000).toString()
     // delete old OTP
     await OTP.deleteMany({email})
@@ -24,7 +25,7 @@ export const sendRegisterOtp = async (req , res)=>{
       otp,
       expiresAt: Date.now() + 10 * 60 * 1000,
       userData: {
-        email, username, password, phone
+        email, username, password: hashedpassword, phone
       }
     })
 

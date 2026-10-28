@@ -19,6 +19,8 @@ const otpSchema = new mongoose.Schema({
   userData: {
     type: Object,
   }
+  },{
+    timestamps: true,
   })
 
 // Automatically delete expired documents using a TTL(Time-to-Live) index
