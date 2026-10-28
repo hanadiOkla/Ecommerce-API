@@ -15,6 +15,34 @@ const imageSchema = new mongoose.Schema(
   },
   { _id: false },
 );
+//------ Review subschema (start)---------
+const reviewSchema = new mongoose.Schema(
+  {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "Review must belong to a user"],
+    },
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      trim: true,
+    },
+    rating: {
+      type: Number,
+      required: [true, "Rating is required"],
+      min: [1, "Rating must be at least 1"],
+      max: [5, "Rating cannot exceed 5"],
+    },
+    comment: {
+      type: String,
+      required: [true, "Comment is required"],
+      trim: true,
+    },
+  },
+  { timestamps: true }
+);
+//-----Review subschema--(end)
 
 const productSchema = new mongoose.Schema(
   {
@@ -95,6 +123,7 @@ const productSchema = new mongoose.Schema(
         lowercase: true,
       },
     ],
+    reviews: [reviewSchema],
 
     averageRating: {
       type: Number,
@@ -142,6 +171,19 @@ productSchema.pre("save", async function () {
 
   this.slug = finalSlug;
 });
+
+//---method calcAverageRating and count of views
+
+productSchema.methods.calcAverageRating = function () {
+  if (this.reviews && this.reviews.length > 0) {
+    const sum = this.reviews.reduce((acc, item) => acc + item.rating, 0);
+    this.averageRating = sum / this.reviews.length;
+    this.numReviews = this.reviews.length;
+  } else {
+    this.averageRating = 0;
+    this.numReviews = 0;
+  }
+};
 
 const Product = mongoose.model("Product", productSchema);
 
