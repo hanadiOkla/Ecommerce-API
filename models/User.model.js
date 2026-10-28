@@ -21,11 +21,12 @@ const userSchema = new mongoose.Schema({
         unique: true,
         trim: true,
     },
-    password: {
-        type: String,
-        trim: true,
-        select: false
-    },
+   password: {
+  type: String,
+  required: [true, "Password is required"],
+  minlength: [6, "Password must be at least 6 characters"],
+  select: false,
+},
     phone: {
         type: String,
         trim: true,
@@ -60,5 +61,5 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model("User", userSchema)
-export default User
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+export default User;
