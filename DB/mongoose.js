@@ -22,8 +22,8 @@ mongoose.connection.on("disconnected", () => {
 export const ConnectToDB = async () => {
   
   try{
-    if(!process.env.MONGO_URL){
-      console.log("MONGO_URL is missing from .env file")
+    if (!process.env.MONGO_URL) {
+      throw new Error("MONGO_URL is missing from .env file");
     }
 
     if (mongoose.connection.readyState === 1) {

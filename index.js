@@ -12,11 +12,14 @@ app.get("/" ,(req , res )=>{
     res.send("the page is home this is page is important")
 })
 
+  
 ConnectToDB()
-
-//Listen 
-app.listen(port, () => {
-    console.log(`app is running on port : ${port}`);
-})
-
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`app is running on port : ${port}`);
+    });
+  })
+  .catch(() => {
+    process.exit(1);
+  });
 // //////////////////////////////////////////////////
