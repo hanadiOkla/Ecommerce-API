@@ -8,8 +8,18 @@ const app = express();
 const port =  process.env.PORT || 3000
 //dns.setServers(["8.8.8.8" , "8.8.4.4"]);
 
-ConnectToDB()
-//Listen 
-app.listen(port, () => {
-    console.log(`app is running on port : ${port}`);
+app.get("/" ,(req , res )=>{
+    res.send("the page is home this is page is important")
 })
+
+  
+ConnectToDB()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`app is running on port : ${port}`);
+    });
+  })
+  .catch(() => {
+    process.exit(1);
+  });
+// //////////////////////////////////////////////////
