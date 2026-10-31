@@ -1,15 +1,16 @@
-import express from "express";
 import dotenv from "dotenv";
-import{ ConnectToDB } from "./DB/mongoose.js"
 dotenv.config();
-//import dns from "dns";
+
+import express from "express";
+import { ConnectToDB } from "./DB/mongoose.js";
 
 const app = express();
-const port =  process.env.PORT || 3000
-//dns.setServers(["8.8.8.8" , "8.8.4.4"]);
+const port = process.env.PORT || 3000;
 
-ConnectToDB()
-//Listen 
+// الاتصال بقاعدة البيانات
+ConnectToDB();
+
+// تشغيل الخادم
 app.listen(port, () => {
-    console.log(`app is running on port : ${port}`);
-})
+  console.log(`app is running on port : ${port}`);
+});
