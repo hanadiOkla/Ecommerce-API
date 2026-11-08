@@ -158,6 +158,19 @@ orderSchema.pre("save", async function () {
   }
 });
 
+// Calculate prices automatically before validation
+orderSchema.pre("validate", function () {
+  this.subtotal = this.items.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
+
+  this.shippingFee = this.subtotal >= 1000 ? 0 : 50;
+  this.tax = Math.round(this.subtotal * 0.14 * 100) / 100;
+  this.totalPrice =
+    this.subtotal + this.shippingFee + this.tax - (this.discount || 0);
+});
+
 // Indexes
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ status: 1 });
