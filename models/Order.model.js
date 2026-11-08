@@ -145,5 +145,23 @@ const orderSchema = new mongoose.Schema({
     { timestamps: true },
 );
 
+// Set status dates automatically
+orderSchema.pre("save", async function () {
+  if (this.isModified("paymentStatus") && this.paymentStatus === "paid" && !this.paidAt) {
+    this.paidAt = new Date();
+  }
+  if (this.isModified("status") && this.status === "delivered" && !this.deliveredAt) {
+    this.deliveredAt = new Date();
+  }
+  if (this.isModified("status") && this.status === "cancelled" && !this.cancelledAt) {
+    this.cancelledAt = new Date();
+  }
+});
+
+// Indexes
+orderSchema.index({ user: 1, createdAt: -1 });
+orderSchema.index({ status: 1 });
+orderSchema.index({ paymentStatus: 1 });
+orderSchema.index({ createdAt: -1 });
 const Order = mongoose.model( "Order" , orderSchema);
 export default Order;
