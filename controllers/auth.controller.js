@@ -6,7 +6,7 @@ import bcryptjs from "bcryptjs";
 
 export const sendRegisterOtp = async (req , res)=>{
   try {
-    const {firstName, lastName, username, email, password, phone} = req.body
+    const {username, email, password, phone} = req.body
 
     const existingUser = await User.findOne({email : email})
     if(existingUser){
@@ -24,7 +24,7 @@ export const sendRegisterOtp = async (req , res)=>{
       otp,
       expiresAt: Date.now() + 10 * 60 * 1000,
       userData: {
-        firstName, lastName, email, username, password, phone
+        email, username, password, phone
       }
     })
 
@@ -69,7 +69,7 @@ export const verifyRegisterOtp = async (req, res) => {
     const { email, otp } = req.body;
 
     const otpRecord = await OTP.findOne({ email });
-    if (!otpRecord) {
+    if (!otpRecord || otpRecord.expiresAt < Date.now()) {
       return res.status(400).json({
         success: false,
         message: "Invalid or expired OTP",
