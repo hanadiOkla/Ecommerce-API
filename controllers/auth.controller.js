@@ -3,6 +3,7 @@ import OTP from "../models/OTP.model.js";
 import JWT from "jsonwebtoken";
 import {sendEmail}  from "../utils/sendEmail.js";
 import bcryptjs from "bcryptjs";
+import generateToken from "../utils/generateToken.js"; // Added for Mostafa's task
 
 export const sendRegisterOtp = async (req , res)=>{
   try {
@@ -106,6 +107,67 @@ export const verifyRegisterOtp = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+
+// 3. Login User
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select('+password');
+    
+    if (!user || !(await user.comparePassword(password))) {
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
+    }
+
+    if (!user.isVerified) {
+      return res.status(403).json({ success: false, message: 'Please verify your email address first' });
+    }
+
+    const token = generateToken(user);
+
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+    };
+    res.cookie('token', token, cookieOptions);
+
+    user.password = undefined; 
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged in successfully',
+      data: { user, token }
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+// 4. Logout User
+export const logout = async (req, res) => {
+  try {
+    res.cookie('token', 'none', {
+      expires: new Date(Date.now() + 10 * 1000), // expires in 10 seconds
+      httpOnly: true
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: 'Logged out successfully',
+      data: {}
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message
     });
   }
 };
