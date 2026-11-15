@@ -70,7 +70,7 @@ export const verifyRegisterOtp = async (req, res) => {
     const { email, otp } = req.body;
 
     const otpRecord = await OTP.findOne({ email });
-    if (!otpRecord) {
+    if (!otpRecord || otpRecord.expiresAt < Date.now()) {
       return res.status(400).json({
         success: false,
         message: "Invalid or expired OTP",
